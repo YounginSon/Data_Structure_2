@@ -45,18 +45,16 @@ int check_root(const char s[], int *index)
         {
             if (in_root_label)
             {
-                // 루트 수준에서 연속된 알파벳 => root 2개 이상
                 return 0;
             }
             root_count++;
             in_root_label = 1;
 
-            // 라벨이 여러 글자일 수도 있으니 루트가 아닌 곳만 묶어서 읽기
             while (s[i] != '\0' && isalpha((unsigned char)s[i]))
             {
                 i++;
                 if (isalpha((unsigned char)s[i]))
-                    return 0; // 루트에서 또 알파벳 → 에러
+                    return 0;
             }
             continue;
         }
