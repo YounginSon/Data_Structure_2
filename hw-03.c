@@ -85,10 +85,23 @@ void post_order(char result_tree[], int size) {
     }
 }
 
+void remove_spaces(const char* input, char* output) {
+    int out_idx = 0;
+    for (int i = 0; input[i] != '\0'; i++) {
+        // 현재 문자가 공백(space, tab 등)이 아닐 때만 결과 배열에 복사
+        if (!isspace(input[i])) {
+            output[out_idx++] = input[i];
+        }
+    }
+    output[out_idx] = '\0'; // 문자열의 끝을 표시
+}
 
 int main(void) {
-    char arr[256];
-    scanf("%[^\n]", arr);
+    char input_arr[256];
+    char processed_input[256];
+    scanf("%[^\n]", input_arr);
+
+    remove_spaces(input_arr, processed_input);
 
     char result_tree[256];
     for (int i = 0; i < 256; ++i) {
@@ -97,7 +110,7 @@ int main(void) {
 
     int arr_pos = 0;
     int max_index = 0;
-    build_tree(arr, &arr_pos, result_tree, 1, &max_index);
+    build_tree(processed_input, &arr_pos, result_tree, 1, &max_index);
 
     int size = max_index;
 
