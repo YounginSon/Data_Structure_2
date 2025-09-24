@@ -1,9 +1,8 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h> // strlen 사용을 위해 추가
+#include <string.h>
 
-// --- 스택 구현 (기존과 동일) ---
 int stack[9999];
 int top = -1;
 
@@ -12,50 +11,33 @@ void push(int item) { stack[++top] = item; }
 int pop() { return is_empty() ? -1 : stack[top--]; }
 int peek() { return is_empty() ? -1 : stack[top]; }
 
-/**
- * @brief 간결하게 재설계된 트리 생성 함수
- * @param arr 입력 문자열
- * @param arr_pos 입력 문자열의 현재 위치를 가리키는 포인터
- * @param result_tree 결과를 저장할 배열
- * @param tree_pos 결과 배열에 현재 노드를 저장할 위치
- * @param max_index_value 사용된 최대 인덱스 추적용 포인터
- */
 void build_tree(const char* arr, int* arr_pos, char result_tree[], int tree_pos, int* max_index_value) {
-    // 공백이나 여는 괄호는 건너뜀
     while (arr[*arr_pos] && (isspace(arr[*arr_pos]) || arr[*arr_pos] == '(')) {
         (*arr_pos)++;
     }
 
-    // 현재 위치에 노드(알파벳)가 있으면 트리에 추가
     if (arr[*arr_pos] && isalpha(arr[*arr_pos])) {
-        // 현재 노드를 배열의 지정된 위치에 저장
         result_tree[tree_pos] = arr[*arr_pos];
         if (tree_pos > *max_index_value) {
             *max_index_value = tree_pos;
         }
-        (*arr_pos)++; // 다음 문자로 이동
+        (*arr_pos)++;
 
-        // 바로 다음에 여는 괄호가 나오면 자식 노드가 있다는 의미
         if (arr[*arr_pos] == '(') {
-            // 첫 번째 자식은 항상 왼쪽 자식 (tree_pos * 2)
             build_tree(arr, arr_pos, result_tree, tree_pos * 2, max_index_value);
 
-            // 왼쪽 자식 서브트리 파싱이 끝난 후, 다음 문자가 알파벳이면 오른쪽 자식임
             if (arr[*arr_pos] && isalpha(arr[*arr_pos])) {
-                // 두 번째 자식은 오른쪽 자식 (tree_pos * 2 + 1)
                 build_tree(arr, arr_pos, result_tree, tree_pos * 2 + 1, max_index_value);
             }
         }
     }
 
-    // 현재 서브트리의 파싱이 끝났으므로 닫는 괄호를 건너뜀
     if (arr[*arr_pos] == ')') {
         (*arr_pos)++;
     }
 }
 
 
-// --- 순회 함수들 (기존과 동일) ---
 void pre_order(char result_tree[], int size) {
     if (size < 1) return;
     top = -1;
@@ -110,15 +92,14 @@ int main(void) {
 
     char result_tree[256];
     for (int i = 0; i < 256; ++i) {
-        result_tree[i] = '\0'; // '0' 대신 널 문자로 초기화하는 것이 더 안전합니다.
+        result_tree[i] = '\0';
     }
 
     int arr_pos = 0;
     int max_index = 0;
-    // 루트 노드는 인덱스 1부터 시작
     build_tree(arr, &arr_pos, result_tree, 1, &max_index);
 
-    int size = max_index; // 최대 인덱스가 곧 배열의 유효 크기
+    int size = max_index;
 
     printf("pre-order: ");
     pre_order(result_tree, size);
