@@ -3,13 +3,29 @@
 #include <stdbool.h>
 #include <string.h>
 
-int stack[9999];
+// input : (A(B(CD)E(FG(HI(JK(L(M(N))))))))
+// 스택을 이용해서 전위, 중위, 후위 순회를 구현
+// 배열에 이진트리를 넣기 위해서는 재귀를 통해서 구현
+/*
+    배열에서 '('를 만나게 되면 재귀 안에 index *2을 넣어 왼쪽 자식 노드를 확인하고,
+    ')'를 만나지 않고 또 다시 노드를 만나게 되면 그 index + 1한다. 함수 자체가 void기 때문에
+    위 경우가 아니라면 함수가 끝나므로 다시 index는 *2를 하기 전으로 돌아오기 때문에 제대로 삽입이 가능할 듯.
+ */
+int stack[999];
 int top = -1;
 
-bool is_empty() { return top == -1; }
-void push(int item) { stack[++top] = item; }
-int pop() { return is_empty() ? -1 : stack[top--]; }
-int peek() { return is_empty() ? -1 : stack[top]; }
+bool is_empty() {
+    return top == -1;
+}
+void push(int item) {
+    stack[++top] = item;
+}
+int pop() {
+    return is_empty() ? -1 : stack[top--];
+}
+int peek() {
+    return is_empty() ? -1 : stack[top];
+}
 
 void build_tree(const char* arr, int* arr_pos, char result_tree[], int tree_pos, int* max_index_value) {
     while (arr[*arr_pos] && (isspace(arr[*arr_pos]) || arr[*arr_pos] == '(')) {
@@ -23,15 +39,26 @@ void build_tree(const char* arr, int* arr_pos, char result_tree[], int tree_pos,
         }
         (*arr_pos)++;
 
+        while (arr[*arr_pos] && isspace(arr[*arr_pos])) {
+            (*arr_pos)++;
+        }
+
         if (arr[*arr_pos] == '(') {
             build_tree(arr, arr_pos, result_tree, tree_pos * 2, max_index_value);
+        }
 
-            if (arr[*arr_pos] && isalpha(arr[*arr_pos])) {
-                build_tree(arr, arr_pos, result_tree, tree_pos * 2 + 1, max_index_value);
-            }
+        while (arr[*arr_pos] && isspace(arr[*arr_pos])) {
+            (*arr_pos)++;
+        }
+
+        if (arr[*arr_pos] && arr[*arr_pos] != ')') {
+            build_tree(arr, arr_pos, result_tree, tree_pos + 1, max_index_value);
         }
     }
 
+    while (arr[*arr_pos] && isspace(arr[*arr_pos])) {
+        (*arr_pos)++;
+    }
     if (arr[*arr_pos] == ')') {
         (*arr_pos)++;
     }
@@ -44,7 +71,8 @@ void pre_order(char result_tree[], int size) {
     push(1);
     while (!is_empty()) {
         int current_index = pop();
-        if (current_index > size || !isalpha(result_tree[current_index])) continue;
+        if (current_index > size || !isalpha(result_tree[current_index]))
+            continue;
         printf("%c ", result_tree[current_index]);
         int right_child = current_index * 2 + 1;
         int left_child = current_index * 2;
@@ -77,31 +105,22 @@ void post_order(char result_tree[], int size) {
         s2[++top2] = node_index;
         int left_child = node_index * 2;
         int right_child = node_index * 2 + 1;
-        if (left_child <= size && isalpha(result_tree[left_child])) s1[++top1] = left_child;
-        if (right_child <= size && isalpha(result_tree[right_child])) s1[++top1] = right_child;
+        if (left_child <= size && isalpha(result_tree[left_child]))
+            s1[++top1] = left_child;
+        if (right_child <= size && isalpha(result_tree[right_child]))
+            s1[++top1] = right_child;
     }
     while (top2 != -1) {
         printf("%c ", result_tree[s2[top2--]]);
     }
 }
 
-void remove_spaces(const char* input, char* output) {
-    int out_idx = 0;
-    for (int i = 0; input[i] != '\0'; i++) {
-        // 현재 문자가 공백(space, tab 등)이 아닐 때만 결과 배열에 복사
-        if (!isspace(input[i])) {
-            output[out_idx++] = input[i];
-        }
-    }
-    output[out_idx] = '\0'; // 문자열의 끝을 표시
-}
-
 int main(void) {
     char input_arr[256];
-    char processed_input[256];
-    scanf("%[^\n]", input_arr);
 
-    remove_spaces(input_arr, processed_input);
+    if (scanf("%[^\n]", input_arr) != 1) {
+        return 1;
+    }
 
     char result_tree[256];
     for (int i = 0; i < 256; ++i) {
@@ -110,8 +129,14 @@ int main(void) {
 
     int arr_pos = 0;
     int max_index = 0;
-    build_tree(processed_input, &arr_pos, result_tree, 1, &max_index);
+    build_tree(input_arr, &arr_pos, result_tree, 1, &max_index);
 
+    // for (int i = 0; i <= max_index; ++i) {
+    //     if (result_tree[i] != '\0') {
+    //          printf("arr[%d] = %c \n", i, result_tree[i]);
+    //     }
+    // }
+    // printf("\n");
     int size = max_index;
 
     printf("pre-order: ");
