@@ -148,8 +148,8 @@ int main(void) {
 
     scanf("%[^\n]", input_arr);
 
-    char result_tree[2000];
-    for (int i = 0; i < 2000; ++i) {
+    char result_tree[4096];
+    for (int i = 0; i < 4096; ++i) {
         result_tree[i] = '\0';
     }
 
@@ -173,7 +173,6 @@ int main(void) {
     printf("\n");
     printf("post-order: ");
     post_order(result_tree, max_index);
-    printf("\n");
 
     return 0;
 }
