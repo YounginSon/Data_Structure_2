@@ -4,6 +4,7 @@
 
 // input : (A(B(CD)E(FG(HI(JK(L(M(N))))))))
 // (A (B (C D) E (G H (I J (K (L) M (N))))))
+//(A(BC(DE(F(G(H(I(J(K(M(N)))))))))))
 // 스택을 이용해서 전위, 중위, 후위 순회를 구현
 // 배열에 이진트리를 넣기 위해서는 재귀를 통해서 구현
 /*
@@ -147,8 +148,8 @@ int main(void) {
 
     scanf("%[^\n]", input_arr);
 
-    char result_tree[256];
-    for (int i = 0; i < 256; ++i) {
+    char result_tree[2000];
+    for (int i = 0; i < 2000; ++i) {
         result_tree[i] = '\0';
     }
 
