@@ -5,6 +5,7 @@
 // input : (A(B(CD)E(FG(HI(JK(L(M(N))))))))
 // (A (B (C D) E (G H (I J (K (L) M (N))))))
 //(A(BC(DE(F(G(H(I(J(K(M(N)))))))))))
+//(A(B(D(J)E(K(LM)I))C(N(OP(QR(S(UT)))))))
 // 스택을 이용해서 전위, 중위, 후위 순회를 구현
 // 배열에 이진트리를 넣기 위해서는 재귀를 통해서 구현
 /*
@@ -157,7 +158,7 @@ int main(void) {
     int max_index = 0;
     build_tree(input_arr, &arr_index, result_tree, 1, &max_index);
 
-    // 제대로 index에 들어갔는지 판단하기 위한 반복문
+    // // 제대로 index에 들어갔는지 판단하기 위한 반복문
     // for (int i = 0; i <= max_index; ++i) {
     //     if (result_tree[i] != '\0') {
     //          printf("arr[%d] = %c \n", i, result_tree[i]);
