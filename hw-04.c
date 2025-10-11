@@ -8,11 +8,60 @@ typedef struct TreeNode {
     struct TreeNode *right;
 } TreeNode;
 
-TreeNode* create_node(int key);
-TreeNode* insert_node(TreeNode* root, int key);
-int linear_search(int arr[], int size, int target, int* comparisons);
-TreeNode* binary_tree_search(TreeNode* root, int target, int* comparisons);
-void free_tree(TreeNode* root);
+TreeNode* create_node(int key) {
+    TreeNode* new_node = (TreeNode*)malloc(sizeof(TreeNode));
+    new_node->key = key;
+    new_node->left = NULL;
+    new_node->right = NULL;
+    return new_node;
+}
+
+TreeNode* insert_node(TreeNode* root, int key) {
+    if (root == NULL) {
+        return create_node(key);
+    }
+    if (key < root->key) {
+        root->left = insert_node(root->left, key);
+    } else if (key > root->key) {
+        root->right = insert_node(root->right, key);
+    }
+    return root;
+}
+
+int linear_search(int arr[], int size, int target, int* comparisons) {
+    *comparisons = 0;
+    for (int i = 0; i < size; i++) {
+        (*comparisons)++; // 비교할 때마다 횟수 1 증가
+        if (arr[i] == target) {
+            return i; // 찾았을 경우 인덱스 반환
+        }
+    }
+    return -1; // 찾지 못했을 경우
+}
+
+TreeNode* binary_tree_search(TreeNode* root, int target, int* comparisons) {
+    *comparisons = 0;
+    TreeNode* current = root;
+    while (current != NULL) {
+        (*comparisons)++; // 비교할 때마다 횟수 1 증가
+        if (target == current->key) {
+            return current; // 찾았을 경우 해당 노드 포인터 반환
+        } else if (target < current->key) {
+            current = current->left; // 작으면 왼쪽으로
+        } else {
+            current = current->right; // 크면 오른쪽으로
+        }
+    }
+    return NULL; // 찾지 못했을 경우
+}
+
+void free_tree(TreeNode* root) {
+    if (root != NULL) {
+        free_tree(root->left);
+        free_tree(root->right);
+        free(root);
+    }
+}
 
 int main() {
     srand(time(NULL));
@@ -95,59 +144,4 @@ int main() {
     free_tree(root);
 
     return 0;
-}
-
-TreeNode* create_node(int key) {
-    TreeNode* new_node = (TreeNode*)malloc(sizeof(TreeNode));
-    new_node->key = key;
-    new_node->left = NULL;
-    new_node->right = NULL;
-    return new_node;
-}
-
-TreeNode* insert_node(TreeNode* root, int key) {
-    if (root == NULL) {
-        return create_node(key);
-    }
-    if (key < root->key) {
-        root->left = insert_node(root->left, key);
-    } else if (key > root->key) {
-        root->right = insert_node(root->right, key);
-    }
-    return root;
-}
-
-int linear_search(int arr[], int size, int target, int* comparisons) {
-    *comparisons = 0;
-    for (int i = 0; i < size; i++) {
-        (*comparisons)++; // 비교할 때마다 횟수 1 증가
-        if (arr[i] == target) {
-            return i; // 찾았을 경우 인덱스 반환
-        }
-    }
-    return -1; // 찾지 못했을 경우
-}
-
-TreeNode* binary_tree_search(TreeNode* root, int target, int* comparisons) {
-    *comparisons = 0;
-    TreeNode* current = root;
-    while (current != NULL) {
-        (*comparisons)++; // 비교할 때마다 횟수 1 증가
-        if (target == current->key) {
-            return current; // 찾았을 경우 해당 노드 포인터 반환
-        } else if (target < current->key) {
-            current = current->left; // 작으면 왼쪽으로
-        } else {
-            current = current->right; // 크면 오른쪽으로
-        }
-    }
-    return NULL; // 찾지 못했을 경우
-}
-
-void free_tree(TreeNode* root) {
-    if (root != NULL) {
-        free_tree(root->left);
-        free_tree(root->right);
-        free(root);
-    }
 }
