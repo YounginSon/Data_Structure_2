@@ -19,13 +19,15 @@
  
  */
 
-typedef struct TreeNode {
+typedef struct TreeNode
+{
     int key;
     struct TreeNode *left;
     struct TreeNode *right;
 } TreeNode;
 
-TreeNode* create_node(int key) {
+TreeNode* create_node(int key)
+{
     TreeNode* new_node = (TreeNode*)malloc(sizeof(TreeNode));
     new_node->key = key;
     new_node->left = NULL;
@@ -33,54 +35,58 @@ TreeNode* create_node(int key) {
     return new_node;
 }
 
-TreeNode* insert_node(TreeNode* root, int key) {
-    if (root == NULL) {
+TreeNode* insert_node(TreeNode* root, int key)
+{
+    if (root == NULL)
         return create_node(key);
-    }
-    if (key < root->key) {
+    if (key < root->key)
         root->left = insert_node(root->left, key);
-    } else if (key > root->key) {
+    else if (key > root->key)
         root->right = insert_node(root->right, key);
-    }
     return root;
 }
 
-int linear_search(int arr[], int size, int target, int* comparisons) {
+int linear_search(int arr[], int size, int target, int* comparisons)
+{
     *comparisons = 0;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) 
+    {
         (*comparisons)++;
-        if (arr[i] == target) {
+        if (arr[i] == target)
             return i;
-        }
     }
     return -1;
 }
 
-TreeNode* binary_tree_search(TreeNode* root, int target, int* comparisons) {
+TreeNode* binary_tree_search(TreeNode* root, int target, int* comparisons)
+{
     *comparisons = 0;
     TreeNode* current = root;
-    while (current != NULL) {
+    while (current != NULL)
+    {
         (*comparisons)++;
-        if (target == current->key) {
+        if (target == current->key)
             return current;
-        } else if (target < current->key) {
+        else if (target < current->key)
             current = current->left;
-        } else {
+        else
             current = current->right;
-        }
     }
     return NULL;
 }
 
-void free_tree(TreeNode* root) {
-    if (root != NULL) {
+void free_tree(TreeNode* root)
+{
+    if (root != NULL)
+    {
         free_tree(root->left);
         free_tree(root->right);
         free(root);
     }
 }
 
-int main() {
+int main(void)
+{
     srand(time(NULL));
 
     int numbers[100];
@@ -90,17 +96,21 @@ int main() {
     printf("--------------------------------------------------\n");
 
     int count = 0;
-    while (count < 100) {
+    while (count < 100)
+    {
         int num = rand() % 1001;
         int is_duplicate = 0;
-        for (int i = 0; i < count; i++) {
-            if (numbers[i] == num) {
+        for (int i = 0; i < count; i++)
+        {
+            if (numbers[i] == num)
+            {
                 is_duplicate = 1;
                 break;
             }
         }
 
-        if (!is_duplicate) {
+        if (!is_duplicate)
+        {
             numbers[count] = num;
             root = insert_node(root, num);
             printf("%d ", numbers[count]);
@@ -109,12 +119,14 @@ int main() {
     }
     printf("\n--------------------------------------------------\n\n");
 
-    while (1) {
+    while (1)
+    {
         int target;
         printf("검색할 숫자를 입력하세요 (종료하려면 -1 입력): ");
         scanf("%d", &target);
 
-        if (target == -1) {
+        if (target == -1)
+        {
             printf("프로그램을 종료합니다.\n");
             break;
         }
@@ -128,11 +140,10 @@ int main() {
         double linear_time = ((double)(end_linear - start_linear)) / CLOCKS_PER_SEC;
 
         printf("1. [배열 선형 탐색]\n");
-        if (found_index != -1) {
+        if (found_index != -1)
             printf("   -> 결과를 찾았습니다!\n");
-        } else {
+        else
             printf("   -> 결과를 찾지 못했습니다.\n");
-        }
         printf("   - 탐색 횟수: %d 회\n", linear_comparisons);
         printf("   - 소요 시간: %.8f 초\n", linear_time);
 
@@ -143,30 +154,27 @@ int main() {
         double bst_time = ((double)(end_bst - start_bst)) / CLOCKS_PER_SEC;
 
         printf("\n2. [이진 탐색 트리]\n");
-        if (found_node != NULL) {
+        if (found_node != NULL)
             printf("   -> 결과를 찾았습니다!\n");
-        } else {
+        else
             printf("   -> 결과를 찾지 못했습니다.\n");
-        }
         printf("   - 탐색 횟수: %d 회\n", bst_comparisons);
         printf("   - 소요 시간: %.8f 초\n", bst_time);
 
         printf("\n3. [종합 비교]\n");
         int comparison_diff = linear_comparisons - bst_comparisons;
 
-        if (comparison_diff > 0) {
+        if (comparison_diff > 0)
             printf("   -> 이진 탐색 트리가 %d회 더 적게 비교하여 효율적이었습니다.\n", comparison_diff);
-        } else if (comparison_diff < 0) {
+        else if (comparison_diff < 0)
             printf("   -> 드물게 배열 탐색이 %d회 더 적게 비교했습니다.\n", -comparison_diff);
-        } else {
+        else
             printf("   -> 두 방식의 탐색 횟수가 동일했습니다.\n");
-        }
 
-        if (linear_time > bst_time) {
+        if (linear_time > bst_time)
             printf("   -> 이진 탐색 트리가 %.8f초 더 빨랐습니다.\n", linear_time - bst_time);
-        } else {
+        else
             printf("   -> 시간 차이는 거의 없거나 배열 탐색이 더 빨랐습니다.\n");
-        }
 
         printf("===================================\n\n");
     }
