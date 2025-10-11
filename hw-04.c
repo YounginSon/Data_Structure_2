@@ -18,6 +18,7 @@
  시간 부분은 제미나이 -> clock을 이용해서 시작할 때 스톱워치를 키고, 끝나면 스톱워치를 종료하는 식으로 측정함.
  
  */
+
 typedef struct TreeNode {
     int key;
     struct TreeNode *left;
