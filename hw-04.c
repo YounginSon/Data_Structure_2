@@ -16,7 +16,7 @@
  선형으로 검색할 때와 이진 탐색 트리를 통해 검색할 때 횟수는 comparisons라는 변수를 활용해서 방문할 때마다 ++시켜주면 그만임.
 
  시간 부분은 제미나이 -> clock을 이용해서 시작할 때 스톱워치를 키고, 끝나면 스톱워치를 종료하는 식으로 측정함.
- 
+
  */
 
 typedef struct TreeNode
@@ -49,7 +49,7 @@ TreeNode* insert_node(TreeNode* root, int key)
 int linear_search(int arr[], int size, int target, int* comparisons)
 {
     *comparisons = 0;
-    for (int i = 0; i < size; i++) 
+    for (int i = 0; i < size; i++)
     {
         (*comparisons)++;
         if (arr[i] == target)
