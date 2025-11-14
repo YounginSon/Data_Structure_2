@@ -172,9 +172,9 @@ int main() {
 
     printf("\n--- 100회 실행 평균 비교 횟수 ---\n");
     printf("단순 삽입 정렬: %.0f 회\n", avg_insertion);
-    printf("쉘 정렬 (N/2 간격): %.0f 회\n", avg_shell);
-    printf("셀 정렬 (knuth 간격): %.0f 회\n", avg_knuth);
-    printf("쉘 정렬 (Ciura 간격): %.0f 회\n", avg_shell_ciura);
+    printf("셸 정렬 (N/2 간격): %.0f 회\n", avg_shell);
+    printf("셸 정렬 (knuth 간격): %.0f 회\n", avg_knuth);
+    printf("셸 정렬 (Ciura 간격): %.0f 회\n", avg_shell_ciura);
 
     free(original_data);
     free(data_for_insertion);
