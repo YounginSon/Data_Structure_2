@@ -52,41 +52,41 @@ long long shell_sort(int arr[], int n) {
     return comparisons;
 }
 
-// 셸 정렬 (Knuth 간격)
-long long shell_sort_knuth(int arr[], int n) {
-    long long comparisons = 0;
-
-    int gaps[50];
-    int h = 1, k = 0;
-
-    while (h < n) {
-        gaps[k++] = h;
-        h = 3 * h + 1;
-    }
-
-    for (int gi = k - 1; gi >= 0; gi--) {
-        int gap = gaps[gi];
-
-        for (int i = gap; i < n; i++) {
-            int temp = arr[i];
-            int j;
-
-            for (j = i; j >= gap; j -= gap) {
-                comparisons++;
-                if (arr[j - gap] > temp)
-                    arr[j] = arr[j - gap];
-                else
-                    break;
-            }
-            arr[j] = temp;
-        }
-    }
-
-    return comparisons;
-}
+// // 셸 정렬 (Knuth 간격)
+// long long shell_sort_knuth(int arr[], int n) {
+//     long long comparisons = 0;
+//
+//     int gaps[50];
+//     int h = 1, k = 0;
+//
+//     while (h < n) {
+//         gaps[k++] = h;
+//         h = 3 * h + 1;
+//     }
+//
+//     for (int gi = k - 1; gi >= 0; gi--) {
+//         int gap = gaps[gi];
+//
+//         for (int i = gap; i < n; i++) {
+//             int temp = arr[i];
+//             int j;
+//
+//             for (j = i; j >= gap; j -= gap) {
+//                 comparisons++;
+//                 if (arr[j - gap] > temp)
+//                     arr[j] = arr[j - gap];
+//                 else
+//                     break;
+//             }
+//             arr[j] = temp;
+//         }
+//     }
+//
+//     return comparisons;
+// }
 
 // 셸 정렬 (Ciura 간격)
-const int ciura_gaps[] = {3937, 1750, 701, 301, 132, 57, 23, 10, 4, 1}; // 10,000개 데이터 기준으로 설정함.
+const int ciura_gaps[] = {8859, 3937, 1750, 701, 301, 132, 57, 23, 10, 4, 1}; // 10,000개 데이터 기준으로 설정함.
 const int num_gaps = sizeof(ciura_gaps) / sizeof(ciura_gaps[0]);
 
 long long shell_sort_ciura(int arr[], int n) {
@@ -129,7 +129,7 @@ int main() {
     int *data_for_insertion = (int *)malloc(DATA_SIZE * sizeof(int));
     int *data_for_shell = (int *)malloc(DATA_SIZE * sizeof(int));
     int *data_for_ciura = (int *)malloc(DATA_SIZE * sizeof(int));
-    int *data_for_knuth = (int *)malloc(DATA_SIZE * sizeof(int));
+    // int *data_for_knuth = (int *)malloc(DATA_SIZE * sizeof(int));
 
     if (original_data == NULL || data_for_insertion == NULL || data_for_shell == NULL) {
         printf("메모리 할당 실패!\n");
@@ -150,11 +150,11 @@ int main() {
         memcpy(data_for_insertion, original_data, DATA_SIZE * sizeof(int));
         memcpy(data_for_shell, original_data, DATA_SIZE * sizeof(int));
         memcpy(data_for_ciura, original_data, DATA_SIZE * sizeof(int));
-        memcpy(data_for_knuth, original_data, DATA_SIZE * sizeof(int));
+        // memcpy(data_for_knuth, original_data, DATA_SIZE * sizeof(int));
 
         total_insertion_comps += insertion_sort(data_for_insertion, DATA_SIZE);
         total_shell_comps += shell_sort(data_for_shell, DATA_SIZE);
-        total_shell_comps_knuth += shell_sort_knuth(data_for_knuth, DATA_SIZE);
+        // total_shell_comps_knuth += shell_sort_knuth(data_for_knuth, DATA_SIZE);
         total_shell_comps_ciura += shell_sort_ciura(data_for_ciura, DATA_SIZE);
 
         if ((i + 1) % 10 == 0) {
@@ -172,15 +172,15 @@ int main() {
 
     printf("\n--- 100회 실행 평균 비교 횟수 ---\n");
     printf("단순 삽입 정렬: %.0f 회\n", avg_insertion);
-    printf("셸 정렬 (N/2 간격): %.0f 회\n", avg_shell);
-    printf("셸 정렬 (knuth 간격): %.0f 회\n", avg_knuth);
-    printf("셸 정렬 (Ciura 간격): %.0f 회\n", avg_shell_ciura);
+    printf("쉘 정렬 (N/2 간격): %.0f 회\n", avg_shell);
+    // printf("셀 정렬 (knuth 간격): %.0f 회\n", avg_knuth);
+    printf("쉘 정렬 (Ciura 간격): %.0f 회\n", avg_shell_ciura);
 
     free(original_data);
     free(data_for_insertion);
     free(data_for_shell);
     free(data_for_ciura);
-    free(data_for_knuth);
+    // free(data_for_knuth);
 
     return 0;
 }
