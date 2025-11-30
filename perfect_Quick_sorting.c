@@ -2,14 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// ==========================================
-// [1] 데이터 구조 및 설정
-// ==========================================
 #define MAX_NAME_LEN 50
 #define MAX_LINE_LEN 200
 
-// [최적화 파라미터]
-// Random Data 시뮬레이션 결과, Threshold 12 구간에서 삽입 정렬 전환 시 효율 최고
 #define DUAL_PIVOT_THRESHOLD 12
 
 typedef struct {
@@ -21,14 +16,8 @@ typedef struct {
     int math;
 } Student;
 
-// 비교 함수 포인터 타입 정의
 typedef int (*CompareFunc)(const Student* a, const Student* b);
 
-// ==========================================
-// [2] 파일 입출력 함수
-// ==========================================
-
-// CSV 파일 저장
 void save_students(const char* filename, Student* arr, int n) {
     FILE* fp = fopen(filename, "w");
     if (!fp) {
@@ -44,7 +33,6 @@ void save_students(const char* filename, Student* arr, int n) {
     fclose(fp);
 }
 
-// 학생 데이터 로드
 Student* load_students(const char* filename, int* out_count) {
     FILE* fp = fopen(filename, "r");
     if (!fp) {
@@ -59,8 +47,8 @@ Student* load_students(const char* filename, int* out_count) {
 
     if (!arr) return NULL;
 
-    fgets(line, sizeof(line), fp); // 헤더 스킵
-
+    fgets(line, sizeof(line), fp);
+    
     while (fgets(line, sizeof(line), fp)) {
         if (count >= capacity) {
             capacity *= 2;
@@ -99,11 +87,6 @@ Student* load_students(const char* filename, int* out_count) {
     return arr;
 }
 
-// ==========================================
-// [3] Quick Sort Optimization Logic
-// ==========================================
-
-// 1. 작은 구간에 대한 삽입 정렬 (Insertion Sort)
 void insertion_sort_range(Student* arr, int low, int high, CompareFunc cmp, long long* comparisons) {
     for (int i = low + 1; i <= high; i++) {
         Student temp = arr[i];
@@ -121,7 +104,6 @@ void insertion_sort_range(Student* arr, int low, int high, CompareFunc cmp, long
     }
 }
 
-// 2. 피벗 선정을 위한 5개 원소 정렬 (Sorting Network)
 void sort_5_elements(Student* arr, int m1, int m2, int m3, int m4, int m5, CompareFunc cmp, long long* comparisons) {
     #define SWAP_IF_GREATER(i, j) { \
         (*comparisons)++; \
@@ -139,14 +121,12 @@ void sort_5_elements(Student* arr, int m1, int m2, int m3, int m4, int m5, Compa
     #undef SWAP_IF_GREATER
 }
 
-// 3. 핵심 알고리즘: Dual-Pivot Quick Sort
 void dual_pivot_quick_sort(Student* arr, int low, int high, CompareFunc cmp, long long* comparisons) {
     if (high - low < DUAL_PIVOT_THRESHOLD) {
         insertion_sort_range(arr, low, high, cmp, comparisons);
         return;
     }
 
-    // Median of 5 Strategy
     int length = high - low + 1;
     int sixth = length / 6;
     int m1 = low + sixth;
@@ -157,14 +137,12 @@ void dual_pivot_quick_sort(Student* arr, int low, int high, CompareFunc cmp, lon
 
     sort_5_elements(arr, m1, m2, m3, m4, m5, cmp, comparisons);
 
-    // 피벗 배치 (P1: 2/6지점, P2: 4/6지점)
     Student t1 = arr[low]; arr[low] = arr[m2]; arr[m2] = t1;
     Student t2 = arr[high]; arr[high] = arr[m4]; arr[m4] = t2;
 
     Student p1 = arr[low];
     Student p2 = arr[high];
 
-    // 파티셔닝
     int l = low + 1;
     int g = high - 1;
     int k = l;
@@ -203,7 +181,6 @@ void dual_pivot_quick_sort(Student* arr, int low, int high, CompareFunc cmp, lon
     Student temp1 = arr[low]; arr[low] = arr[l]; arr[l] = temp1;
     Student temp2 = arr[high]; arr[high] = arr[g]; arr[g] = temp2;
 
-    // 재귀 호출
     dual_pivot_quick_sort(arr, low, l - 1, cmp, comparisons);
     (*comparisons)++;
     if (cmp(&p1, &p2) < 0) {
@@ -212,25 +189,22 @@ void dual_pivot_quick_sort(Student* arr, int low, int high, CompareFunc cmp, lon
     dual_pivot_quick_sort(arr, g + 1, high, cmp, comparisons);
 }
 
-// 4. [전처리 최적화 1] 이미 정렬된 상태 확인 (Early Exit)
 int is_already_sorted(Student* arr, int n, CompareFunc cmp, long long* comparisons) {
     for (int i = 0; i < n - 1; i++) {
         (*comparisons)++;
-        if (cmp(&arr[i], &arr[i+1]) > 0) return 0; // 정렬 안됨
+        if (cmp(&arr[i], &arr[i+1]) > 0) return 0;
     }
-    return 1; // 정렬됨
+    return 1;
 }
 
-// 5. [전처리 최적화 2] 역순 정렬 상태 확인 (Reverse Check)
 int is_reverse_sorted(Student* arr, int n, CompareFunc cmp, long long* comparisons) {
     for (int i = 0; i < n - 1; i++) {
         (*comparisons)++;
-        if (cmp(&arr[i], &arr[i+1]) < 0) return 0; // 정방향 요소가 있음 (역순 아님)
+        if (cmp(&arr[i], &arr[i+1]) < 0) return 0;
     }
-    return 1; // 완벽한 역순
+    return 1;
 }
 
-// 6. 배열 뒤집기 유틸리티
 void reverse_array(Student* arr, int n) {
     int left = 0, right = n - 1;
     while (left < right) {
@@ -241,40 +215,29 @@ void reverse_array(Student* arr, int n) {
     }
 }
 
-// 7. 메인 정렬 래퍼 함수 (최종 호출용)
 long long quick_sort_optimized(Student* arr, int n, CompareFunc cmp) {
     long long comparisons = 0;
 
-    // [Step 1] 이미 정렬된 경우 -> 즉시 종료 (Cost: N)
     if (is_already_sorted(arr, n, cmp, &comparisons)) {
         return comparisons;
     }
 
-    // [Step 2] 역순 정렬된 경우 -> 뒤집고 종료 (Cost: N + Swap)
     if (is_reverse_sorted(arr, n, cmp, &comparisons)) {
         reverse_array(arr, n);
         return comparisons;
     }
 
-    // [Step 3] 무작위 데이터 -> Dual-Pivot Quick Sort 수행 (Cost: N log N)
     dual_pivot_quick_sort(arr, 0, n - 1, cmp, &comparisons);
 
     return comparisons;
 }
 
-// ==========================================
-// [4] 비교 함수 정의
-// ==========================================
-
-// 1. ID 기준
 int cmp_id_asc(const Student* a, const Student* b) { return a->id - b->id; }
 int cmp_id_desc(const Student* a, const Student* b) { return b->id - a->id; }
 
-// 2. 이름 기준
 int cmp_name_asc(const Student* a, const Student* b) { return strcmp(a->name, b->name); }
 int cmp_name_desc(const Student* a, const Student* b) { return strcmp(b->name, a->name); }
 
-// 3. 성적 기준 (합계 -> 국어 -> 영어 -> 수학)
 int cmp_grade_asc(const Student* a, const Student* b) {
     int sum_a = a->korean + a->english + a->math;
     int sum_b = b->korean + b->english + b->math;
@@ -292,10 +255,6 @@ int cmp_grade_desc(const Student* a, const Student* b) {
     return b->math - a->math;
 }
 
-// ==========================================
-// [5] 메인 함수
-// ==========================================
-
 int main() {
     int count = 0;
     Student* original_data = load_students("dataset_id_ascending.csv", &count);
@@ -311,7 +270,6 @@ int main() {
 
     Student* test_arr = malloc(sizeof(Student) * count);
 
-    // *Gender 항목 제외* (Quick Sort는 Unstable 하므로)
     struct {
         char* title;
         char* filename;
@@ -330,16 +288,12 @@ int main() {
     for (int i = 0; i < num_tests; i++) {
         long long total_comparisons = 0;
 
-        // [수정됨] 10회 반복 수행
         for (int k = 0; k < 10; k++) {
-            // 매 반복마다 데이터 초기화 (정렬되지 않은 원본 상태로 복구)
-            // 이것이 없으면 2번째 반복부터는 Early Exit에 걸려버림
             memcpy(test_arr, original_data, sizeof(Student) * count);
 
             total_comparisons += quick_sort_optimized(test_arr, count, tests[i].func);
         }
 
-        // 평균 계산
         long long average_comparisons = total_comparisons / 10;
 
         printf("[%s]\n", tests[i].title);
