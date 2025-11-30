@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// ==========================================
-// [1] 데이터 구조 및 설정
-// ==========================================
 #define MAX_NAME_LEN 50
 #define MAX_LINE_LEN 200
 
@@ -24,12 +21,7 @@ typedef struct AVLNode {
     int height;
 } AVLNode;
 
-// 전역 변수: 비교 횟수 카운팅
 long long avl_comparisons = 0;
-
-// ==========================================
-// [2] 유틸리티 및 Helper 함수
-// ==========================================
 
 int get_height(AVLNode* node) {
     if (node == NULL) return 0;
@@ -49,7 +41,6 @@ AVLNode* create_node(Student data) {
     return node;
 }
 
-// 배열 뒤집기 (데이터 이동만 함 -> 비교 횟수 0)
 void reverse_array(Student* arr, int n) {
     int left = 0, right = n - 1;
     while (left < right) {
@@ -59,10 +50,6 @@ void reverse_array(Student* arr, int n) {
         left++; right--;
     }
 }
-
-// ==========================================
-// [3] Standard AVL Insert (무작위 데이터용)
-// ==========================================
 
 AVLNode* right_rotate(AVLNode* y) {
     AVLNode* x = y->left;
@@ -116,11 +103,6 @@ AVLNode* insert_standard(AVLNode* node, Student data) {
     return node;
 }
 
-// ==========================================
-// [4] Optimized Construction (정렬된 데이터용)
-// ==========================================
-
-// 분할 정복으로 트리 조립 (비교 0회)
 AVLNode* sorted_array_to_avl(Student* arr, int start, int end) {
     if (start > end) return NULL;
     int mid = (start + end) / 2;
@@ -131,11 +113,6 @@ AVLNode* sorted_array_to_avl(Student* arr, int start, int end) {
     return node;
 }
 
-// ==========================================
-// [5] Smart Builder Logic (핵심!)
-// ==========================================
-
-// 오름차순 확인
 int is_sorted_asc(Student* arr, int n) {
     for (int i = 0; i < n - 1; i++) {
         avl_comparisons++;
@@ -144,7 +121,6 @@ int is_sorted_asc(Student* arr, int n) {
     return 1;
 }
 
-// 내림차순 확인
 int is_sorted_desc(Student* arr, int n) {
     for (int i = 0; i < n - 1; i++) {
         avl_comparisons++;
@@ -153,25 +129,16 @@ int is_sorted_desc(Student* arr, int n) {
     return 1;
 }
 
-// [핵심] 상황에 따라 오름차순/내림차순/랜덤 모두 대응
 AVLNode* build_smart_avl(Student* arr, int n) {
-    // 1. 오름차순 검사 (Best Case 1)
     if (is_sorted_asc(arr, n)) {
-        // 이미 오름차순 -> 바로 조립
         return sorted_array_to_avl(arr, 0, n - 1);
     }
 
-    // 2. 내림차순 검사 (Best Case 2)
-    // 주의: 앞선 검사에서 실패했으므로 comparisons 누적됨
     if (is_sorted_desc(arr, n)) {
-        // 역순이네? -> 뒤집자! (ID 비교 비용 0)
         reverse_array(arr, n);
-        // 뒤집으면 오름차순이 되므로 바로 조립
         return sorted_array_to_avl(arr, 0, n - 1);
     }
 
-    // 3. 랜덤 데이터 (General Case)
-    // 어쩔 수 없이 표준 삽입 수행
     AVLNode* root = NULL;
     for (int i = 0; i < n; i++) {
         root = insert_standard(root, arr[i]);
@@ -179,7 +146,6 @@ AVLNode* build_smart_avl(Student* arr, int n) {
     return root;
 }
 
-// 메모리 해제
 void free_avl(AVLNode* root) {
     if (root != NULL) {
         free_avl(root->left);
@@ -188,7 +154,6 @@ void free_avl(AVLNode* root) {
     }
 }
 
-// 파일 로드
 Student* load_students(const char* filename, int* out_count) {
     FILE* fp = fopen(filename, "r");
     if (!fp) { perror("File Open Error"); return NULL; }
@@ -230,20 +195,15 @@ int main() {
 
     Student* test_data = malloc(sizeof(Student) * count);
 
-    // =========================================================
-    // TEST 1: 오름차순 데이터 (ID Ascending)
-    // =========================================================
     long long total_comparisons_1 = 0;
 
     for (int k = 0; k < 10; k++) {
-        // 데이터 초기화
         memcpy(test_data, original_data, sizeof(Student) * count);
 
         avl_comparisons = 0;
         AVLNode* root = build_smart_avl(test_data, count);
         total_comparisons_1 += avl_comparisons;
 
-        // 메모리 해제 (반복 실행 시 필수)
         free_avl(root);
     }
 
@@ -251,14 +211,9 @@ int main() {
     printf("  - Average Comparisons (10 runs): %lld\n", total_comparisons_1 / 10);
     printf("  - Expectation: Low (Approx N) -> Detected Ascending\n\n");
 
-
-    // =========================================================
-    // TEST 2: 내림차순 데이터 (ID Descending)
-    // =========================================================
     long long total_comparisons_2 = 0;
 
     for (int k = 0; k < 10; k++) {
-        // 데이터 초기화 후 강제로 뒤집어서 '내림차순 입력' 상태 만들기
         memcpy(test_data, original_data, sizeof(Student) * count);
         reverse_array(test_data, count);
 
